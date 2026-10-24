@@ -1,0 +1,27 @@
+vssadmin 1.1 - Volume Shadow Copy Service administrative command-line tool
+(C) Copyright 2001-2013 Microsoft Corp.
+
+Writer name: 'Task Scheduler Writer'
+   Writer Id: {d61d61c8-d73a-4eee-8cdd-f6f9786b7124}
+   Writer Instance Id: {1bddd48e-5052-49db-9b07-b96f96727e6b}
+   State: [1] Stable
+   Last error: No error
+
+Writer name: 'SqlServerWriter'
+   Writer Id: {a65faa63-5ea8-4ebc-9dbd-a0c4db26912a}
+   Writer Instance Id: {3b4e8b1a-5b6e-4a3e-9a1d-2b7d0c6f1e11}
+   State: [8] Failed
+   Last error: Timed out
+
+Writer name: 'Microsoft Hyper-V VSS Writer'
+   Writer Id: {66841cd4-6ded-4f4b-8f17-fd23f8ddc3de}
+   Writer Instance Id: {a7f0c1f2-1d2e-4c3b-8a9b-0c1d2e3f4a5b}
+   State: [5] Waiting for completion
+   Last error: No error
+
+Writer name: 'Registry Writer'
+   Writer Id: {afbab4a2-367d-4d15-a586-71dbb18f8485}
+   Writer Instance Id: {684e1b6b-3c31-4b0e-9d0b-6a5f4b3c2d1e}
+   State: [1] Stable
+   Last error: Retryable error
+
