@@ -1,0 +1,24 @@
+# Generated reports / exports
+reports/
+output/
+*.csv
+!examples/*.csv
+*.log
+*.tmp
+
+# Local secrets / config overrides (never commit credentials)
+*.secret.*
+*.local.ps1
+*.cred.xml
+.env
+
+# Pester / test output
+TestResults/
+testResults.xml
+coverage.xml
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
