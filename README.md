@@ -10,14 +10,21 @@ PowerShell scripts for the daily checks behind backup monitoring and disaster re
 work: VSS writer health, repository capacity, backup-related event log errors, Veeam
 job results, and a combined HTML health report that can be emailed.
 
+> The sample report in `examples/` is built from fictional data.
+
+## Overview
+
+Backup monitoring is mostly the same few questions every morning: are the VSS writers
+healthy, is there space on the repositories, did anything log backup errors overnight, and
+did every job succeed? This toolkit answers each one with a standalone script and combines
+them into one HTML report.
+
 Each script runs on its own, has comment-based help (`Get-Help .\script.ps1 -Full`),
 validates its parameters, handles errors, and contains no hard-coded credentials.
 Most also return a meaningful **exit code**, so they can run as **RMM script monitors**
-(NinjaRMM, Datto RMM, Syncro, ConnectWise).
+(NinjaOne, Datto RMM, Syncro, ConnectWise).
 
----
-
-## Contents
+## Features
 
 | Script | What it does |
 |---|---|
@@ -27,18 +34,9 @@ Most also return a meaningful **exit code**, so they can run as **RMM script mon
 | [`Get-VeeamJobReport.ps1`](scripts/Get-VeeamJobReport.ps1) | Uses `Get-VBRJob` / `Get-VBRBackupSession` to summarise the last result of each job plus session counts in a window, and exports CSV/HTML. |
 | [`Send-BackupReport.ps1`](scripts/Send-BackupReport.ps1) | Runs the checks above and builds one self-contained HTML report with an overall OK / Warning / Failed status. It can send the report over SMTP and supports `-WhatIf`. |
 
-```
-backup-dr-powershell-toolkit/
-├── scripts/                     # the toolkit
-├── examples/
-│   ├── sample-backup-report.html   # SAMPLE OUTPUT (fictional data)
-│   └── New-SampleReport.ps1        # regenerates the sample
-├── tests/                       # Pester tests + vssadmin fixture
-├── PSScriptAnalyzerSettings.psd1
-└── .github/workflows/ci.yml     # lint + tests on every push
-```
+## Quick start
 
-## Requirements
+Requirements:
 
 - Windows PowerShell 5.1 or PowerShell 7+
 - Windows Server / Windows for the live checks. `vssadmin` and the event log checks
@@ -50,8 +48,6 @@ backup-dr-powershell-toolkit/
 Parsing, capacity checks and report building also work on PowerShell 7 on Linux and
 macOS, which is how CI tests them.
 
-## Quick start
-
 ```powershell
 git clone https://github.com/ich74851-doom/backup-dr-powershell-toolkit.git
 cd backup-dr-powershell-toolkit\scripts
@@ -62,7 +58,7 @@ Get-ChildItem *.ps1 | Unblock-File
 Get-Help .\Get-VssWriterHealth.ps1 -Full
 ```
 
-## Usage examples
+## Usage
 
 ### VSS writer health
 
@@ -147,7 +143,7 @@ To see what the report looks like, download
 [`examples/sample-backup-report.html`](examples/sample-backup-report.html) and open it
 in a browser. It is **sample output built from fictional data**.
 
-## Scheduling
+### Scheduling
 
 Run the combined report every morning with Task Scheduler:
 
@@ -160,6 +156,29 @@ Register-ScheduledTask -TaskName 'Daily Backup Health Report' -Action $action -T
 
 If you add SMTP credentials to a scheduled run, keep them in a secret store
 (for example `Microsoft.PowerShell.SecretManagement`), not in the task arguments.
+
+### Notes and limitations
+
+- `vssadmin` output is parsed in English. On other display languages, collect the
+  output from an English-language system or change the regexes.
+- In Veeam v12, agent (computer) backup jobs are managed with `Get-VBRComputerBackupJob`,
+  and `Get-VBRJob` may leave them out.
+- `Send-MailMessage` is obsolete but still works. For Microsoft 365 tenants with SMTP AUTH
+  turned off, use a relay connector or Microsoft Graph.
+- Test in a lab or a maintenance window before rolling out to production.
+
+## Project structure
+
+```text
+backup-dr-powershell-toolkit/
+├── scripts/                     # the toolkit
+├── examples/
+│   ├── sample-backup-report.html   # SAMPLE OUTPUT (fictional data)
+│   └── New-SampleReport.ps1        # regenerates the sample
+├── tests/                       # Pester tests + vssadmin fixture
+├── PSScriptAnalyzerSettings.psd1
+└── .github/workflows/ci.yml     # lint + tests on every push
+```
 
 ## Testing
 
@@ -174,16 +193,13 @@ Invoke-Pester -Path .\tests -Output Detailed
 CI runs both on every push. The tests use a saved `vssadmin` fixture and pre-collected
 data, so they need neither Windows nor Veeam.
 
-## Notes and limitations
+## Roadmap
 
-- `vssadmin` output is parsed in English. On other display languages, collect the
-  output from an English-language system or change the regexes.
-- In Veeam v12, agent (computer) backup jobs are managed with `Get-VBRComputerBackupJob`,
-  and `Get-VBRJob` may leave them out.
-- `Send-MailMessage` is obsolete but still works. For Microsoft 365 tenants with SMTP AUTH
-  turned off, use a relay connector or Microsoft Graph.
-- Test in a lab or a maintenance window before rolling out to production.
+- Pester coverage for the Veeam report using recorded session objects
+- Microsoft Graph mail delivery for tenants with SMTP AUTH turned off
+- JSON output for every script, for ticketing and n8n workflows
+- Optional Veeam v12 computer backup job support in `Get-VeeamJobReport.ps1`
 
 ## License
 
-[MIT](LICENSE) © Ishant Choudhary
+[MIT](LICENSE)
