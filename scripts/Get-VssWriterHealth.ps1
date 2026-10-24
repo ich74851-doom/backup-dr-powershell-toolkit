@@ -32,7 +32,7 @@
 
 .PARAMETER ExitWithCode
     After writing the objects, exit with code 1 if any writer is not Healthy, or
-    with 0 if all are. This is useful for RMM script monitors (NinjaRMM, Datto RMM,
+    with 0 if all are. This is useful for RMM script monitors (NinjaOne, Datto RMM,
     Syncro, ConnectWise) that alert on a non-zero exit code.
 
 .EXAMPLE
